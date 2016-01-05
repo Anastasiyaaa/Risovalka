@@ -1,0 +1,9 @@
+c:\users\asus\documents\visual studio 2013\Projects\WindowsFormsRisovalka\WindowsFormsApplication2\bin\Debug\WindowsFormsApplication2.exe.config
+C:\Users\asus\Documents\Visual Studio 2013\Projects\WindowsFormsRisovalka\WindowsFormsApplication2\bin\Debug\WindowsFormsApplication2.exe
+C:\Users\asus\Documents\Visual Studio 2013\Projects\WindowsFormsRisovalka\WindowsFormsApplication2\bin\Debug\WindowsFormsApplication2.pdb
+C:\Users\asus\Documents\Visual Studio 2013\Projects\WindowsFormsRisovalka\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.csprojResolveAssemblyReference.cache
+C:\Users\asus\Documents\Visual Studio 2013\Projects\WindowsFormsRisovalka\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.Form1.resources
+C:\Users\asus\Documents\Visual Studio 2013\Projects\WindowsFormsRisovalka\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.Properties.Resources.resources
+C:\Users\asus\Documents\Visual Studio 2013\Projects\WindowsFormsRisovalka\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.csproj.GenerateResource.Cache
+C:\Users\asus\Documents\Visual Studio 2013\Projects\WindowsFormsRisovalka\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.exe
+C:\Users\asus\Documents\Visual Studio 2013\Projects\WindowsFormsRisovalka\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.pdb
