@@ -16,33 +16,40 @@ namespace WindowsFormsApplication2
         Bitmap bmp;
         CCanvas pCanvas;
         Graphics g;
-        Rectangle rect;
         bool flag;
 
         public Form1()
         {
             InitializeComponent();
+            ochistka();
+        }
 
-            pictureBox1.AllowDrop = true;
-
+        //Скрыть элементы для ввода текста
+        private void skritT()
+        {
+            textBox1.Visible = false;
+            label1.Visible = false;
+            button2.Visible = false;
+        }
+        //Показать элементы для ввода текста
+        private void pokazatT()
+        {
+            textBox1.Visible = true;
+            label1.Visible = true;
+            button2.Visible = true;
+        }
+        private void ochistka()
+        {
             pCanvas = new CCanvas();
+            CCanvas.CFigureList.Clear();
+            CCanvas.CLineList.Clear();
             bmp = new Bitmap(pictureBox1.ClientSize.Width, pictureBox1.ClientSize.Height);
             g = Graphics.FromImage(bmp);
             g.Clear(Color.White);
             pictureBox1.Image = bmp;
-        }
+            rad_Figure.Checked = true;
 
-        private void btn_rectangle_Click(object sender, EventArgs e)
-        {
-            rect = new Rectangle();
-            rect.Position =new Point(20,20);
-            rect.Height = 50;
-            rect.Width = 60;
-            rect.OtrisovkaLine = false;
-
-            pCanvas.Add(rect);
-
-            ReDrow();
+            skritT();
         }
 
         public void ReDrow()
@@ -51,72 +58,60 @@ namespace WindowsFormsApplication2
             g = Graphics.FromImage(bmp);
             g.Clear(Color.White);
 
-            foreach (CFigure pF in pCanvas.CFigureList)
+            foreach (CFigure pF in CCanvas.CFigureList)
             {
-                   pF.DrRectangle(g);
-                
+                pF.DrFigure(g);
+            }
+            foreach (Line pL in CCanvas.CLineList)
+            {
+                pL.DrLine(g);
             }
             pictureBox1.Image = bmp;
         }
 
-        private void btn_rectanglePunctir_Click(object sender, EventArgs e)
+        
+        private void MouseDownPictureBox(object sender, MouseEventArgs e)
         {
-            RectanglePunctir rect = new RectanglePunctir();
-            rect.Position = new Point(200, 20);
-            rect.Height = 50;
-            rect.Width = 60;
-            rect.OtrisovkaLine = false;
-
-            pCanvas.Add(rect);
-
-            ReDrow();
-        }
-
-        private void MauseDownPictureBox(object sender, MouseEventArgs e)
-        {
-            if (ch_Line.Checked)
+            CFigure cFigure = CCanvas.CFigureList.Where(o => o.Vhod(e.X, e.Y)).FirstOrDefault();
+            if (cFigure != null)
             {
-                CFigure cFigure = pCanvas.CFigureList.Where(o => o.Vhod(e.X, e.Y)).FirstOrDefault();
-                if (cFigure != null)
+                if (rad_Line.Checked && cFigure is Rhombus == false)
                 {
-                    cFigure.OtrisovkaLine = true;
+                    Line line = new Line(e.X, e.Y, cFigure.Id);
+                    pCanvas.Add(line);
 
-                    Line line = new Line();
-                    line.Position = new Point(e.X, e.Y);
-                    line.PositionLine = new Point(e.X, e.Y);
-                    line.Perenos = false;
-                    line.Otrisovka = true;
-                    pCanvas.Add(line);    
+                    flag = true;
                 }
-            }
-            else
-            {
-                pCanvas.DragStart(e.X, e.Y);
-            }
-            flag = true;
-            ReDrow();
-        }
+                if (rad_LineNo.Checked && cFigure is Rhombus)
+                {
+                    LineNY lineny = new LineNY(e.X, e.Y, cFigure.Id);
+                    lineny.TextLine = "нет";
+                    pCanvas.Add(lineny);
 
-        private void MauseUpPictureBox(object sender, MouseEventArgs e)
-        {
-            flag = false;
-            if (ch_Line.Checked)
-            {
-                pCanvas.DragMouseUpLine(e.X, e.Y);
-                
+                    flag = true;
+                }
+                if (rad_LineYes.Checked && cFigure is Rhombus)
+                {
+                    LineNY lineny = new LineNY(e.X, e.Y, cFigure.Id);
+                    lineny.TextLine = "да";
+                    pCanvas.Add(lineny);
+
+                    flag = true;
+                }
+                if (rad_Figure.Checked)
+                {
+                    pCanvas.DragStart(e.X, e.Y, cFigure);
+                    flag = true;
+                }
+                ReDrow();
             }
-            else
-            {
-                pCanvas.DragStop(e.X, e.Y);    
-            }
-            ReDrow();    
         }
 
         private void MouseMovePicterBox(object sender, MouseEventArgs e)
         {
             if (flag)
             {
-                if (ch_Line.Checked)
+                if (!rad_Figure.Checked)
                 {
                     pCanvas.DragMoveLine(e.X, e.Y);
                     pictureBox1.Cursor = Cursors.Hand;
@@ -130,14 +125,15 @@ namespace WindowsFormsApplication2
             }
             else
             {
-                CFigure cFigure = pCanvas.CFigureList.FirstOrDefault(o => o.Vhod(e.X, e.Y));
+                CFigure cFigure = CCanvas.CFigureList.FirstOrDefault(o => o.Vhod(e.X, e.Y));
                 if (cFigure != null)
                 {
-                    if (ch_Line.Checked)
+                    if (rad_Line.Checked && cFigure is Rhombus == false ||
+                        (rad_LineNo.Checked || rad_LineYes.Checked) && cFigure is Rhombus)
                     {
                         pictureBox1.Cursor = Cursors.Hand;
                     }
-                    else
+                    if (rad_Figure.Checked)
                     {
                         pictureBox1.Cursor = Cursors.SizeAll;
                     }
@@ -149,14 +145,101 @@ namespace WindowsFormsApplication2
             }
         }
 
+        private void MouseUpPictureBox(object sender, MouseEventArgs e)
+        {
+            flag = false;
+            if (!rad_Figure.Checked)
+            {
+                pCanvas.DragMouseUpLine(e.X, e.Y);
+            }
+            else
+            {
+                pCanvas.DragStop(e.X, e.Y);    
+            }
+            ReDrow();    
+        }
+
+        
+       
         private void btnClear_Click(object sender, EventArgs e)
         {
-            pCanvas = new CCanvas();
-            bmp = new Bitmap(pictureBox1.ClientSize.Width, pictureBox1.ClientSize.Height);
-            g = Graphics.FromImage(bmp);
-            g.Clear(Color.White);
-            pictureBox1.Image = bmp;
-            ch_Line.Checked = false;
+            ochistka();
+        }
+
+        private void MouseButton_Click(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                CFigure cFigure = CCanvas.CFigureList.Where(o => o.Vhod(e.X, e.Y)).FirstOrDefault();
+                if (cFigure != null)
+                {
+                    pokazatT();
+                    textBox1.Text = cFigure.TextFigure;
+                    cFigure.ColorFigure = Color.Blue;
+                    ReDrow();
+                }
+            }
+        }
+
+        private void btnClick_AddText(object sender, EventArgs e)
+        {
+            CFigure cFigure = CCanvas.CFigureList.Where(o => o.ColorFigure==Color.Blue).FirstOrDefault();
+            if (cFigure != null)
+            {
+                cFigure.ColorFigure = Color.Black;
+                cFigure.TextFigure = textBox1.Text;
+                textBox1.Text = "";
+                ReDrow();
+
+                PologenieLine.PerenosLine(cFigure);
+                ReDrow();
+
+                skritT();
+            }
+        }
+
+        private void btn_nachalo_Click(object sender, EventArgs e)
+        {
+            Circle circle = new Circle();
+            pCanvas.Add(circle); 
+
+            ReDrow();
+        }
+        private void btn_rectangle_Click(object sender, EventArgs e)
+        {
+            Rectangle rect = new Rectangle();
+            pCanvas.Add(rect);
+
+            ReDrow();
+        }
+        private void btn_rectanglePunctir_Click(object sender, EventArgs e)
+        {
+            RectanglePunctir rect = new RectanglePunctir();
+            pCanvas.Add(rect);
+
+            ReDrow();
+        }
+
+        private void btn_romb_Click(object sender, EventArgs e)
+        {
+            Rhombus rhombus = new Rhombus();
+            pCanvas.Add(rhombus);
+
+            ReDrow();
+        }
+
+        private void btn_parallelogramm_Click(object sender, EventArgs e)
+        {
+            Parallelogramm parallelogramm = new Parallelogramm();
+            pCanvas.Add(parallelogramm);
+
+            ReDrow();
+        }
+
+        private void viravnivanie_Click(object sender, EventArgs e)
+        {
+            Viravnivanie.ViravnivanieMethod();
+            ReDrow();
         }
 
     }

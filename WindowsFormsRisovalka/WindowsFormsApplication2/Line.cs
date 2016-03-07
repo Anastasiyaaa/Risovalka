@@ -8,22 +8,30 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApplication2
 {
-    class Line:CFigure
+    class Line
     {
-        public Point PositionLine { get; set; }
-        public bool Otrisovka { get; set; }
-        public bool KvNachalo { get; set; }
-        public bool KvKonec { get; set; }
-        public override void DrRectangle(Graphics g)
-        {
-            Pen pen = new Pen(Color.Black,4);
-            pen.EndCap = LineCap.ArrowAnchor;
-            g.DrawLine(pen, Position.X, Position.Y, PositionLine.X, PositionLine.Y);
-        }
+        public Point PositionLineNachalo;
+        public bool Perenos;
+        
+        public Point PositionLineKonec;
+        public bool Otrisovka;
+        public Guid IdFigureNachalo;
+        public Guid IdFigureKonec;
 
-        public override bool Vhod(int cursorX, int cursorY)
+        
+        public Line(int x, int y, Guid idFigure)
         {
-            return false;
+            IdFigureNachalo = idFigure;
+            PositionLineNachalo = new Point(x, y);
+            PositionLineKonec = new Point(x, y);
+            Perenos = false;
+            Otrisovka = true;
+        }
+        public virtual void DrLine(Graphics g)
+        {
+            Pen pen = new Pen(Color.Black, 4);
+            pen.EndCap = LineCap.ArrowAnchor;
+            g.DrawLine(pen, PositionLineNachalo.X, PositionLineNachalo.Y, PositionLineKonec.X, PositionLineKonec.Y);
         }
     }
 }

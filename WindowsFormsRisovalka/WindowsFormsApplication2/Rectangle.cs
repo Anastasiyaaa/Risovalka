@@ -10,14 +10,30 @@ namespace WindowsFormsApplication2
 {
     class Rectangle: CFigure
     {
-        public override void DrRectangle(Graphics g)
+        public Rectangle()
         {
-            Pen pen = new Pen(Color.Black, 2);
+            Position = new Point(40, 90);
+            Id = Guid.NewGuid();
+            Height = 50;
+            Width = 60;
+            TextFigure = "";
+            ColorFigure = Color.Black;
+        }
+        public override void DrFigure(Graphics g)
+        {
+            len = DrowText(g, Position.X + 2, Position.Y + 2);
+
+            Width = len.Width > 60 ? len.Width + 10 : 60;
+            Height = len.Height > 50 ? len.Height + 10 : 50;
+
+            SerediniStoronMethPoints();
+
+            Pen pen = new Pen(ColorFigure, 2);
             g.DrawRectangle(pen, Position.X, Position.Y, Width, Height);
         }
         public override bool Vhod(int cursorX, int cursorY)
         {
-            if (cursorX > Position.X && cursorX < Position.X + Width && cursorY > Position.Y && cursorY < Position.Y + Height)
+            if (cursorX >= Position.X && cursorX <= Position.X + Width && cursorY >= Position.Y && cursorY <= Position.Y + Height)
             {
                 return true;
             }
