@@ -36,14 +36,30 @@ namespace WindowsFormsApplication2
         }
         public override bool Vhod(int cursorX, int cursorY)
         {
-            if (Convert.ToDouble((cursorX - SerediniStoron[3].X))/(SerediniStoron[0].X - SerediniStoron[3].X) >=
-                Convert.ToDouble((cursorY - SerediniStoron[3].Y))/(SerediniStoron[0].Y - SerediniStoron[3].Y) &&
-                Convert.ToDouble((cursorX - SerediniStoron[2].X))/(SerediniStoron[1].X - SerediniStoron[2].X) <=
-                Convert.ToDouble((cursorY - SerediniStoron[2].Y))/(SerediniStoron[1].Y - SerediniStoron[2].Y) &&
-                Convert.ToDouble((cursorX - SerediniStoron[3].X))/(SerediniStoron[2].X - SerediniStoron[3].X) >=
-                Convert.ToDouble((cursorY - SerediniStoron[3].Y))/(SerediniStoron[2].Y - SerediniStoron[3].Y) &&
-                Convert.ToDouble((cursorX - SerediniStoron[0].X))/(SerediniStoron[1].X - SerediniStoron[0].X) <=
-                Convert.ToDouble((cursorY - SerediniStoron[0].Y))/(SerediniStoron[1].Y - SerediniStoron[0].Y))
+            double chislitel11 = cursorX - SoedineniePoint("left").X;
+            double znamenatel11 = SoedineniePoint("top").X - SoedineniePoint("left").X;
+            double chislitel12 = cursorY - SoedineniePoint("left").Y;
+            double znamenatel12 = SoedineniePoint("top").Y - SoedineniePoint("left").Y;
+
+            double chislitel21 = cursorX - SoedineniePoint("bottom").X;
+            double znamenatel21 = SoedineniePoint("right").X - SoedineniePoint("bottom").X;
+            double chislitel22 = cursorY - SoedineniePoint("bottom").Y;
+            double znamenatel22 = SoedineniePoint("right").Y - SoedineniePoint("bottom").Y;
+
+            double chislitel31 = cursorX - SoedineniePoint("left").X;
+            double znamenatel31 = SoedineniePoint("bottom").X - SoedineniePoint("left").X;
+            double chislitel32 = cursorY - SoedineniePoint("left").Y;
+            double znamenatel32 = SoedineniePoint("bottom").Y - SoedineniePoint("left").Y;
+
+            double chislitel41 = cursorX - SoedineniePoint("top").X;
+            double znamenatel41 = SoedineniePoint("right").X - SoedineniePoint("top").X;
+            double chislitel42 = cursorY - SoedineniePoint("top").Y;
+            double znamenatel42 = SoedineniePoint("right").Y - SoedineniePoint("top").Y;
+
+            if (chislitel11 / znamenatel11 >= chislitel12 / znamenatel12 &&
+               chislitel21 / znamenatel21 <= chislitel22 / znamenatel22 &&
+               chislitel31 / znamenatel31 >= chislitel32 / znamenatel32 &&
+               chislitel41 / znamenatel41 <= chislitel42 / znamenatel42)
             {
                 return true;
             }

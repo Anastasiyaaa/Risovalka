@@ -42,62 +42,19 @@ namespace WindowsFormsApplication2
 
         public static void ViravnivanieMethod()
         {
+            startZnacheniya();
+            firstFigure();
+            pereborFigureLineFigure();
+            endViravnivanie();
+        }
+
+        #region Для метода ViravnivanieMethod
+        private static void startZnacheniya()
+        {
             cfigureList = new List<CFigure>();
             cnewfigureList = new List<CFigure>();
             minLeft = 658;
             maxRight = 0;
-
-            firstFigure();
-            do
-            {
-                foreach (CFigure cfigure in cfigureList)
-                {
-                    if (cfigure is Rhombus)
-                    {
-                        foreach (LineNY lineNY in CCanvas.CLineList.Where(o => o is LineNY && o.IdFigureNachalo == cfigure.Id))
-                        {
-                            figurePosleRhombus(lineNY, cfigure);
-                            maxMinX();
-                        }
-                    }
-                    else
-                    {
-                        Line line = CCanvas.CLineList.Where(o => o.IdFigureNachalo == cfigure.Id).FirstOrDefault();
-                        if (line != null)
-                        {
-                            figurePosleNeRhombus(cfigure, line);
-                        }
-                    }
-                }
-                cfigureList.Clear();
-                cfigureList.AddRange(cnewfigureList);
-                cnewfigureList.Clear();
-            } while (cfigureList.Count != 0 && cfigureList != null);
-
-            endViravnivanie();
-        }
-
-        private static void figurePosleNeRhombus(CFigure cfigure, Line line)
-        {
-            newCFigure = CCanvas.CFigureList.Where(o => o.Id == line.IdFigureKonec).FirstOrDefault();
-            newCFigure.Position = new Point(cfigure.SerediniStoron[2].X - newCFigure.Width / 2,
-                cfigure.Position.Y + cfigure.Height + 20);
-            newCFigure.Perenos = true;
-            newCFigure.SerediniStoronMethPoints();
-
-            maxMinX();
-
-            PologenieLine.PerenosLine(newCFigure);
-            cnewfigureList.Add(newCFigure);
-        }
-        private static void endViravnivanie()
-        {
-            foreach (CFigure figure in CCanvas.CFigureList)
-            {
-                figure.Perenos = false;
-                figure.VihodLineRight = false;
-                figure.VihodLineLeft = false;
-            }
         }
         private static void firstFigure()
         {
@@ -111,11 +68,57 @@ namespace WindowsFormsApplication2
                 PologenieLine.PerenosLine(cFigure);
             }
         }
-
-        private static void maxMinX()
+        private static void pereborFigureLineFigure()
         {
-            MinLeft = newCFigure.Position.X;
-            MaxRight = newCFigure.Position.X + newCFigure.Width;
+            do
+            {
+                pereborFigureUrovnya();
+                perehodKSledUroven();
+
+            } while (cfigureList.Count != 0 && cfigureList != null);
+        }
+        private static void endViravnivanie()
+        {
+            foreach (CFigure figure in CCanvas.CFigureList)
+            {
+                figure.Perenos = false;
+                figure.VihodLineRight = false;
+                figure.VihodLineLeft = false;
+            }
+        }
+        #endregion
+
+        #region Для метода pereborFigureLineFigure
+        private static void pereborFigureUrovnya()
+        {
+            foreach (CFigure cfigure in cfigureList)
+            {
+                if (cfigure is Rhombus)
+                {
+                    pereborVihodLine(cfigure);
+                }
+                else
+                {
+                    VihodOneLine(cfigure);
+                }
+            }
+        }
+        private static void perehodKSledUroven()
+        {
+            cfigureList.Clear();
+            cfigureList.AddRange(cnewfigureList);
+            cnewfigureList.Clear();
+        }
+        #endregion
+
+        #region Для метода pereborFigureUrovnya
+        private static void pereborVihodLine(CFigure cfigure)
+        {
+            foreach (LineNY lineNY in CCanvas.CLineList.Where(o => o is LineNY && o.IdFigureNachalo == cfigure.Id))
+            {
+                figurePosleRhombus(lineNY, cfigure);
+                maxMinX();
+            }
         }
         private static void figurePosleRhombus(LineNY lineNY, CFigure cfigure)
         {
@@ -129,26 +132,20 @@ namespace WindowsFormsApplication2
             //линия из 4 точек
             else
             {
-                PologenieLine.positionLineFourDot(cfigure, lineNY, newCFigure);
+                PologenieLine.PositionLineFourDot(cfigure, lineNY, newCFigure);
             }
         }
         private static void figurePosleRhombusBezPerenosa(LineNY lineNY, CFigure cfigure)
         {
             //329-центр по X
-            if (cfigure.SoedineniePoint("top").X >= 329 && cfigure.VihodLineLeft ==false ||
+            if (cfigure.SoedineniePoint("top").X >= 329 && cfigure.VihodLineLeft == false ||
                 cfigure.SoedineniePoint("top").X <= 329 && cfigure.VihodLineRight == true)
             {
-                newCFigure.Position = new Point(cfigure.Position.X - newCFigure.Width - 40,
-                    cfigure.Position.Y + cfigure.Height + 20);
-                cfigure.VihodLineLeft = true;
-                lineNY.PositionLineNachalo = cfigure.SoedineniePoint("left");
+                figureLeveeRhombus(lineNY, cfigure);
             }
             else
             {
-                newCFigure.Position = new Point(cfigure.Position.X + cfigure.Width + 40,
-                    cfigure.Position.Y + cfigure.Height + 20);
-                cfigure.VihodLineRight = true;
-                lineNY.PositionLineNachalo = cfigure.SoedineniePoint("right");
+                figurePraveeRhombus(lineNY, cfigure);
             }
             lineNY.PositionLineKonec = newCFigure.SoedineniePoint("top");
             lineNY.LineThreePoints();
@@ -156,6 +153,53 @@ namespace WindowsFormsApplication2
 
             newCFigure.Perenos = true;
             newCFigure.SerediniStoronMethPoints();
+        }
+
+        #region Для метода figurePosleRhombusBezPerenosa
+        private static void figureLeveeRhombus(LineNY lineNY, CFigure cfigure)
+        {
+            newCFigure.Position = new Point(cfigure.Position.X - newCFigure.Width - 40,
+                    cfigure.Position.Y + cfigure.Height + 20);
+            cfigure.VihodLineLeft = true;
+            lineNY.PositionLineNachalo = cfigure.SoedineniePoint("left");
+        }
+        private static void figurePraveeRhombus(LineNY lineNY, CFigure cfigure)
+        {
+            newCFigure.Position = new Point(cfigure.Position.X + cfigure.Width + 40,
+                    cfigure.Position.Y + cfigure.Height + 20);
+            cfigure.VihodLineRight = true;
+            lineNY.PositionLineNachalo = cfigure.SoedineniePoint("right");
+        }
+        #endregion
+
+        private static void VihodOneLine(CFigure cfigure)
+        {
+            Line line = CCanvas.CLineList.Where(o => o.IdFigureNachalo == cfigure.Id).FirstOrDefault();
+            if (line != null)
+            {
+                figurePosleNeRhombus(cfigure, line);
+            }
+        }
+        private static void figurePosleNeRhombus(CFigure cfigure, Line line)
+        {
+            newCFigure = CCanvas.CFigureList.Where(o => o.Id == line.IdFigureKonec).FirstOrDefault();
+            newCFigure.Position = new Point(cfigure.SerediniStoron[2].X - newCFigure.Width / 2,
+                cfigure.Position.Y + cfigure.Height + 20);
+            newCFigure.Perenos = true;
+            newCFigure.SerediniStoronMethPoints();
+
+            maxMinX();
+
+            PologenieLine.PerenosLine(newCFigure);
+            cnewfigureList.Add(newCFigure);
+        }
+
+        #endregion
+
+        private static void maxMinX()
+        {
+            MinLeft = newCFigure.Position.X;
+            MaxRight = newCFigure.Position.X + newCFigure.Width;
         }
     }
 }

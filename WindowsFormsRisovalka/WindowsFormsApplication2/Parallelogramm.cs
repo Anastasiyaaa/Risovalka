@@ -53,15 +53,19 @@ namespace WindowsFormsApplication2
         }
         public override bool Vhod(int cursorX, int cursorY)
         {
-            if (Convert.ToDouble((cursorX - Position.X)) / (Position.X+10 - Position.X) >=
-                Convert.ToDouble((cursorY - (Position.Y+Height))) / (Position.Y - (Position.Y+Height)) &&
-                Convert.ToDouble((cursorX - (Position.X+Width-10))) / (Position.X+Width - (Position.X+Width-10)) <=
-                Convert.ToDouble((cursorY - SerediniStoron[2].Y)) / (SerediniStoron[1].Y - SerediniStoron[2].Y) &&
-                cursorY >= Position.Y && cursorY <= Position.Y + Height) 
+            double znachenie1 = Convert.ToDouble(cursorX - Position.X) / 10;
+            double znachenie2 = Convert.ToDouble(cursorY - (Position.Y + Height))/-Height;
+            double znachenie3 = Convert.ToDouble(cursorX - (Position.X + Width - 10))/10;
+            double znachenie4 = Convert.ToDouble(cursorY - (Position.Y + Height))/
+                                (Position.Y - (Position.Y + Height));
+            
+            if (znachenie1 >= znachenie2 && 
+                znachenie3 <= znachenie4 &&
+                cursorY >= Position.Y &&
+                cursorY <= Position.Y + Height)
             {
                 return true;
             }
-
             return false;
         }
     }

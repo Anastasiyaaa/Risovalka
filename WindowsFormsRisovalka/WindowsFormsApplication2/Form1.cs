@@ -58,93 +58,137 @@ namespace WindowsFormsApplication2
             g = Graphics.FromImage(bmp);
             g.Clear(Color.White);
 
+            pereborFigureRedrow();
+            pereborLineRedrow();
+
+            pictureBox1.Image = bmp;
+        }
+
+        private void pereborFigureRedrow()
+        {
             foreach (CFigure pF in CCanvas.CFigureList)
             {
                 pF.DrFigure(g);
-            }
+            } 
+        }
+        private void pereborLineRedrow()
+        {
             foreach (Line pL in CCanvas.CLineList)
             {
                 pL.DrLine(g);
             }
-            pictureBox1.Image = bmp;
         }
-
         
         private void MouseDownPictureBox(object sender, MouseEventArgs e)
         {
             CFigure cFigure = CCanvas.CFigureList.Where(o => o.Vhod(e.X, e.Y)).FirstOrDefault();
             if (cFigure != null)
             {
-                if (rad_Line.Checked && cFigure is Rhombus == false)
-                {
-                    Line line = new Line(e.X, e.Y, cFigure.Id);
-                    pCanvas.Add(line);
+                ifRadLineChecked(cFigure, e);
+                ifRadLineNoChecked(cFigure, e);
+                ifRadLineYesChecked(cFigure, e);
+                ifRadFigureChecked(cFigure, e);
 
-                    flag = true;
-                }
-                if (rad_LineNo.Checked && cFigure is Rhombus)
-                {
-                    LineNY lineny = new LineNY(e.X, e.Y, cFigure.Id);
-                    lineny.TextLine = "нет";
-                    pCanvas.Add(lineny);
-
-                    flag = true;
-                }
-                if (rad_LineYes.Checked && cFigure is Rhombus)
-                {
-                    LineNY lineny = new LineNY(e.X, e.Y, cFigure.Id);
-                    lineny.TextLine = "да";
-                    pCanvas.Add(lineny);
-
-                    flag = true;
-                }
-                if (rad_Figure.Checked)
-                {
-                    pCanvas.DragStart(e.X, e.Y, cFigure);
-                    flag = true;
-                }
                 ReDrow();
             }
         }
+
+        #region для MouseDownPictureBox
+        private void ifRadLineChecked(CFigure cFigure, MouseEventArgs e)
+        {
+            if (rad_Line.Checked && cFigure is Rhombus == false)
+            {
+                Line line = new Line(e.X, e.Y, cFigure.Id);
+                pCanvas.Add(line);
+
+                flag = true;
+            }
+        }
+        private void ifRadLineNoChecked(CFigure cFigure, MouseEventArgs e)
+        {
+            if (rad_LineNo.Checked && cFigure is Rhombus)
+            {
+                LineNY lineny = new LineNY(e.X, e.Y, cFigure.Id);
+                lineny.TextLine = "нет";
+                pCanvas.Add(lineny);
+
+                flag = true;
+            }
+        }
+        private void ifRadLineYesChecked(CFigure cFigure, MouseEventArgs e)
+        {
+            if (rad_LineYes.Checked && cFigure is Rhombus)
+            {
+                LineNY lineny = new LineNY(e.X, e.Y, cFigure.Id);
+                lineny.TextLine = "да";
+                pCanvas.Add(lineny);
+
+                flag = true;
+            }
+        }
+        private void ifRadFigureChecked(CFigure cFigure, MouseEventArgs e)
+        {
+            if (rad_Figure.Checked)
+            {
+                pCanvas.DragStart(e.X, e.Y, cFigure);
+                flag = true;
+            }
+        }
+        #endregion
 
         private void MouseMovePicterBox(object sender, MouseEventArgs e)
         {
             if (flag)
             {
-                if (!rad_Figure.Checked)
-                {
-                    pCanvas.DragMoveLine(e.X, e.Y);
-                    pictureBox1.Cursor = Cursors.Hand;
-                }
-                else
-                {
-                    pCanvas.DragMove(e.X, e.Y);
-                    pictureBox1.Cursor = Cursors.SizeAll;
-                }
-                ReDrow();
+                perenosFigureOrLine(e);
             }
             else
             {
-                CFigure cFigure = CCanvas.CFigureList.FirstOrDefault(o => o.Vhod(e.X, e.Y));
-                if (cFigure != null)
-                {
-                    if (rad_Line.Checked && cFigure is Rhombus == false ||
-                        (rad_LineNo.Checked || rad_LineYes.Checked) && cFigure is Rhombus)
-                    {
-                        pictureBox1.Cursor = Cursors.Hand;
-                    }
-                    if (rad_Figure.Checked)
-                    {
-                        pictureBox1.Cursor = Cursors.SizeAll;
-                    }
-                }
-                else
-                {
-                    pictureBox1.Cursor = Cursors.Arrow;
-                }
+                naveliNaFigureOrNet(e);
             }
         }
 
+        private void perenosFigureOrLine(MouseEventArgs e)
+        {
+            if (!rad_Figure.Checked)
+            {// рисование линии
+                pCanvas.DragMoveLine(e.X, e.Y);
+                pictureBox1.Cursor = Cursors.Hand;
+            }
+            else
+            {//перенос фигуры
+                pCanvas.DragMove(e.X, e.Y);
+                pictureBox1.Cursor = Cursors.SizeAll;
+            }
+            ReDrow();
+        }
+
+        private void naveliNaFigureOrNet(MouseEventArgs e)
+        {
+            CFigure cFigure = CCanvas.CFigureList.FirstOrDefault(o => o.Vhod(e.X, e.Y));
+            if (cFigure != null)
+            {
+                vidCursoraPriNavedenii(cFigure);
+            }
+            else
+            {
+                pictureBox1.Cursor = Cursors.Arrow;
+            }
+        }
+
+        private void vidCursoraPriNavedenii(CFigure cFigure)
+        {
+            if (rad_Line.Checked && cFigure is Rhombus == false ||
+                    (rad_LineNo.Checked || rad_LineYes.Checked) && cFigure is Rhombus)
+            {
+                pictureBox1.Cursor = Cursors.Hand;
+            }
+            if (rad_Figure.Checked)
+            {
+                pictureBox1.Cursor = Cursors.SizeAll;
+            }
+        }
+ 
         private void MouseUpPictureBox(object sender, MouseEventArgs e)
         {
             flag = false;

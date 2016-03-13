@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace WindowsFormsApplication2
 {
-    internal class Circle : CFigure
+    class Circle : CFigure
     {
         public int Radius;
         private int x_center;

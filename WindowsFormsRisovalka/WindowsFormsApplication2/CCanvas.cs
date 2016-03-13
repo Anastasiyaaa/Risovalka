@@ -23,7 +23,7 @@ namespace WindowsFormsApplication2
             CLineList.Add(line);
         }
 
-        #region Прорисовка линии
+        #region Перенос линии
         public void DragMoveLine(int Xl, int Yl)
         {
             Line line = CLineList.Where(o => o.Otrisovka).FirstOrDefault();
@@ -35,7 +35,6 @@ namespace WindowsFormsApplication2
                 numMin = PologenieLine.OptimalPut(cFigure, line.PositionLineKonec);
                 line.PositionLineNachalo = new Point(cFigure.SerediniStoron[numMin].X, cFigure.SerediniStoron[numMin].Y);
             }
-
         }
         public void DragMouseUpLine(int Xl, int Yl)
         {

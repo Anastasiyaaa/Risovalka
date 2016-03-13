@@ -33,7 +33,8 @@ namespace WindowsFormsApplication2
         }
         public override bool Vhod(int cursorX, int cursorY)
         {
-            if (cursorX >= Position.X && cursorX <= Position.X + Width && cursorY >= Position.Y && cursorY <= Position.Y + Height)
+            if (cursorX >= Position.X && cursorX <= Position.X + Width && cursorY >= Position.Y &&
+                cursorY <= Position.Y + Height)
             {
                 return true;
             }

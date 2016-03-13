@@ -13,12 +13,11 @@ namespace WindowsFormsApplication2
         private static double min;
         private static double kvX;
         private static double kvY;
+
         public static int OptimalPut(CFigure cFigure, Point position)
         {
-            kvX = Math.Pow(cFigure.SerediniStoron[0].X - position.X, 2);
-            kvY = Math.Pow(cFigure.SerediniStoron[0].Y - position.Y, 2);
-            numMin = 0;
-            min = kvX + kvY;
+            nachZnachMin(cFigure, position);
+
             for (int i = 1; i < 4; i++)
             {
                 kvX = Math.Pow(cFigure.SerediniStoron[i].X - position.X, 2);
@@ -31,6 +30,13 @@ namespace WindowsFormsApplication2
             }
             return numMin;
         }
+        private static void nachZnachMin(CFigure cFigure, Point position)
+        {
+            kvX = Math.Pow(cFigure.SerediniStoron[0].X - position.X, 2);
+            kvY = Math.Pow(cFigure.SerediniStoron[0].Y - position.Y, 2);
+            numMin = 0;
+            min = kvX + kvY;
+        }
         public static void PerenosLine(CFigure cFigure)
         {
             PerenosNachalaLine(cFigure);
@@ -42,31 +48,54 @@ namespace WindowsFormsApplication2
         {
             if (cFigure is Rhombus)
             {
-                foreach (LineNY lineNY in CCanvas.CLineList.Where(o => o.IdFigureNachalo == cFigure.Id))
-                {
-                    CFigure figure = CCanvas.CFigureList.Where(o => o.Id == lineNY.IdFigureKonec).FirstOrDefault();
-                    if (lineNY.SposobOtrisovki == false)
-                    {
-                        positionLineThreeDot(cFigure, lineNY, figure);
-                    }
-                    if (lineNY.SposobOtrisovki == true)
-                    {
-                        positionLineFourDot(cFigure, lineNY, figure);
-                    }
-                    if (lineNY.SposobOtrisovki == null)
-                    {
-                        PerenosNachalaLineNeRhombus(lineNY, cFigure);
-                    }
-                }
+                pereborLineNYperenosNachLine(cFigure);
             }
             else
             {
-                foreach (Line line in CCanvas.CLineList.Where(o => o.IdFigureNachalo == cFigure.Id))
-                {
-                   PerenosNachalaLineNeRhombus(line, cFigure);
-                }
+                pereborLinePerenosNachLine(cFigure);
             }
         }
+        private static void pereborLineNYperenosNachLine(CFigure cFigure)
+        {
+            foreach (LineNY lineNY in CCanvas.CLineList.Where(o => o.IdFigureNachalo == cFigure.Id))
+            {
+                CFigure figure = CCanvas.CFigureList.Where(o => o.Id == lineNY.IdFigureKonec).FirstOrDefault();
+
+                ifThreeDotNachLine(cFigure, lineNY, figure);
+                ifFourDotNachLine(cFigure, lineNY, figure);
+                ifTwoDotNachLine(cFigure, lineNY);
+            }
+        }
+
+        private static void ifThreeDotNachLine(CFigure cFigure, LineNY lineNY, CFigure figure)
+        {
+            if (lineNY.SposobOtrisovki == false)
+            {
+                positionLineThreeDot(cFigure, lineNY, figure);
+            }
+        }
+        private static void ifFourDotNachLine(CFigure cFigure, LineNY lineNY, CFigure figure)
+        {
+            if (lineNY.SposobOtrisovki == true)
+            {
+                PositionLineFourDot(cFigure, lineNY, figure);
+            }
+        }
+        private static void ifTwoDotNachLine(CFigure cFigure, LineNY lineNY)
+        {
+            if (lineNY.SposobOtrisovki == null)
+            {
+                PerenosNachalaLineNeRhombus(lineNY, cFigure);
+            }
+        }
+        private static void pereborLinePerenosNachLine(CFigure cFigure)
+        {
+            foreach (Line line in CCanvas.CLineList.Where(o => o.IdFigureNachalo == cFigure.Id))
+            {
+                PerenosNachalaLineNeRhombus(line, cFigure);
+            }
+        }
+
         private static void PerenosNachalaLineNeRhombus(Line line, CFigure cFigure)
         {
             numMin = OptimalPut(cFigure, line.PositionLineKonec);
@@ -79,6 +108,7 @@ namespace WindowsFormsApplication2
         }
         #endregion
 
+
         private static void positionLineThreeDot(CFigure cFigure, LineNY lineNY, CFigure figure)
         {
             lineNY.PositionLineNachalo =
@@ -87,10 +117,9 @@ namespace WindowsFormsApplication2
                                 : "left");
             lineNY.LineThreePoints();
         }
-
-        public static void positionLineFourDot(CFigure cFigure, LineNY lineNY, CFigure figure)
+        public static void PositionLineFourDot(CFigure cFigure, LineNY lineNY, CFigure figure)
         {
-            if (cFigure.SoedineniePoint("top").X <= figure.SoedineniePoint("top").X)
+            if (cFigure.SoedineniePoint("top").X < figure.SoedineniePoint("top").X)
             {
                 lineNY.PositionLineNachalo = cFigure.SoedineniePoint("left");
                 lineNY.PositionLineKonec = figure.SoedineniePoint("left");
@@ -104,34 +133,57 @@ namespace WindowsFormsApplication2
             }
         }
 
+
         #region Перенос конца линии
         private static void PerenosKoncaLine(CFigure cFigure)
+        {
+            pereborLineNYkoncaLine(cFigure);
+            pereborLineKoncaLine(cFigure);
+        }
+
+        private static void pereborLineKoncaLine(CFigure cFigure)
+        {
+            foreach (Line line in CCanvas.CLineList.Where(o => o.IdFigureKonec == cFigure.Id && o is LineNY == false))
+            {
+                perenosKoncaLineNeRhombus(line, cFigure);
+            }
+        }
+        private static void pereborLineNYkoncaLine(CFigure cFigure)
         {
             foreach (LineNY lineNY in CCanvas.CLineList.Where(o => o.IdFigureKonec == cFigure.Id && o is LineNY))
             {
                 CFigure figureNachalaLine = CCanvas.CFigureList.Where(o => o.Id == lineNY.IdFigureNachalo).FirstOrDefault();
 
-                if (lineNY.SposobOtrisovki == false)//линия из 3 точек
-                {
-                    lineNY.PositionLineKonec = cFigure.SoedineniePoint("top");
-                    positionLineThreeDot(figureNachalaLine, lineNY,cFigure);
-                }
-                if (lineNY.SposobOtrisovki == true)
-                {
-                    positionLineFourDot(figureNachalaLine, lineNY, cFigure);
-                }
-                if (lineNY.SposobOtrisovki == null)
-                {
-                    PerenosKoncaLineNeRhombus(lineNY, cFigure);
+                ifThreeDotkoncaLine(cFigure, lineNY, figureNachalaLine);
+                ifFourDotkoncaLine(cFigure, lineNY, figureNachalaLine);
+                ifTwoDotkoncaLine(cFigure, lineNY);
+            }   
+        }
 
-                }
-            }
-            foreach (Line line in CCanvas.CLineList.Where(o => o.IdFigureKonec == cFigure.Id && o is LineNY==false))
+        private static void ifThreeDotkoncaLine(CFigure cFigure, LineNY lineNY, CFigure figureNachalaLine)
+        {
+            if (lineNY.SposobOtrisovki == false)//линия из 3 точек
             {
-                PerenosKoncaLineNeRhombus(line, cFigure);
+                lineNY.PositionLineKonec = cFigure.SoedineniePoint("top");
+                positionLineThreeDot(figureNachalaLine, lineNY, cFigure);
             }
         }
-        private static void PerenosKoncaLineNeRhombus(Line line, CFigure cFigure)
+        private static void ifFourDotkoncaLine(CFigure cFigure, LineNY lineNY, CFigure figureNachalaLine)
+        {
+            if (lineNY.SposobOtrisovki == true)
+            {
+                PositionLineFourDot(figureNachalaLine, lineNY, cFigure);
+            }
+        }
+        private static void ifTwoDotkoncaLine(CFigure cFigure, LineNY lineNY)
+        {
+            if (lineNY.SposobOtrisovki == null)
+            {
+                perenosKoncaLineNeRhombus(lineNY, cFigure);
+            }
+        }
+
+        private static void perenosKoncaLineNeRhombus(Line line, CFigure cFigure)
         {
             numMin = OptimalPut(cFigure, line.PositionLineNachalo);
             line.PositionLineKonec = new Point(cFigure.SerediniStoron[numMin].X, cFigure.SerediniStoron[numMin].Y);
@@ -141,7 +193,6 @@ namespace WindowsFormsApplication2
             numMin = OptimalPut(figure, line.PositionLineKonec);
             line.PositionLineNachalo = new Point(figure.SerediniStoron[numMin].X, figure.SerediniStoron[numMin].Y);
         }
-
         #endregion
     }
 }

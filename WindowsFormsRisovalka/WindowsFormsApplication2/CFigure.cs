@@ -30,7 +30,6 @@ namespace WindowsFormsApplication2
         #region Абстрактные методы
         public abstract void DrFigure(Graphics g);
         public abstract bool Vhod(int cursorX, int cursorY);
-
         #endregion
 
         public virtual void SerediniStoronMethPoints()
@@ -41,7 +40,6 @@ namespace WindowsFormsApplication2
             SerediniStoron[2] = new Point(Position.X + Width / 2, Position.Y + Height);
             SerediniStoron[3] = new Point(Position.X, Position.Y + Height / 2);
         }
-        
         public Point SoedineniePoint(string storona)
         {
             switch (storona)
